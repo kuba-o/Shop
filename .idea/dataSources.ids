@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="dataSourceStorage">
+  <data-source name="MySQL - informatics_shop@localhost" uuid="a36214cc-ed32-4d70-acdb-3e54dbd2420c">
+    <database-info product="MySQL" version="5.6.28-0ubuntu0.14.04.1" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 )">
+      <extra-name-characters>#@</extra-name-characters>
+      <identifier-quote-string>`</identifier-quote-string>
+    </database-info>
+    <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact"/>
+    <schema name="" catalog="informatics_shop"/>
+    <table name="shop" schema="" catalog="informatics_shop" type="TABLE">
+      <column name="title" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="artist" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="quantity" sqlType="INT" precision="10" scale="0" nullable="true" jdbcType="4"/>
+      <column name="price" sqlType="DOUBLE" precision="22" scale="0" nullable="true" jdbcType="8"/>
+    </table>
+  </data-source>
+</component>
