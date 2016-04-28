@@ -2,15 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c8259838-1741-4aba-a606-28b6f6491a46" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Record.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/Shop/SwingController$ButtonClickListener.class" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/Shop/DatabaseController.class" afterPath="$PROJECT_DIR$/out/production/Shop/DatabaseController.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/Shop/Shop.class" afterPath="$PROJECT_DIR$/out/production/Shop/Shop.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/Shop/SwingController$1.class" afterPath="$PROJECT_DIR$/out/production/Shop/SwingController$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/Shop/SwingController$2.class" afterPath="$PROJECT_DIR$/out/production/Shop/SwingController$2.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/Shop/SwingController.class" afterPath="$PROJECT_DIR$/out/production/Shop/SwingController.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/DatabaseController.java" afterPath="$PROJECT_DIR$/src/DatabaseController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Shop.java" afterPath="$PROJECT_DIR$/src/Shop.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/SwingController.java" afterPath="$PROJECT_DIR$/src/SwingController.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -72,8 +63,8 @@
       <file leaf-file-name="SwingController.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/SwingController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.358804">
-              <caret line="166" column="51" selection-start-line="166" selection-start-column="51" selection-end-line="166" selection-end-column="51" />
+            <state vertical-scroll-proportion="0.7973422">
+              <caret line="203" column="33" selection-start-line="203" selection-start-column="33" selection-end-line="203" selection-end-column="33" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -160,13 +151,18 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Enum" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="k-master" />
+      </map>
+    </option>
   </component>
   <component name="GradleLocalSettings">
     <option name="modificationStamps">
@@ -187,10 +183,10 @@
         <option value="$PROJECT_DIR$/src/SwingControlDemo.java" />
         <option value="$APPLICATION_CONFIG_DIR$/consoles/db/a36214cc-ed32-4d70-acdb-3e54dbd2420c/console.sql" />
         <option value="$PROJECT_DIR$/src/Record.java" />
-        <option value="$PROJECT_DIR$/src/SwingController.java" />
         <option value="$PROJECT_DIR$/src/Password.java" />
         <option value="$PROJECT_DIR$/src/DatabaseController.java" />
         <option value="$PROJECT_DIR$/src/Shop.java" />
+        <option value="$PROJECT_DIR$/src/SwingController.java" />
       </list>
     </option>
   </component>
@@ -237,6 +233,22 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scratches" />
+      <pane id="PackagesPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Shop" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Shop" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -271,22 +283,6 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scratches" />
-      <pane id="Scope" />
-      <pane id="PackagesPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Shop" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Shop" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -719,12 +715,13 @@
       <workItem from="1460710692418" duration="200000" />
       <workItem from="1461840705244" duration="1191000" />
       <workItem from="1461842792910" duration="3218000" />
-      <workItem from="1461846412268" duration="23000" />
+      <workItem from="1461846412268" duration="172000" />
+      <workItem from="1461846597606" duration="133000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="48488000" />
+    <option name="totallyTimeSpent" value="48770000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -826,27 +823,6 @@
     </option>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/DatabaseController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="91" column="78" selection-start-line="91" selection-start-column="78" selection-end-line="91" selection-end-column="78" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <marker date="1461846167720" expanded="true" signature="1102:1132" placeholder="select count..shop..." />
-            <marker date="1461846167720" expanded="true" signature="1825:1837" placeholder="update shop ..." />
-            <marker date="1461846167720" expanded="true" signature="1825:1879" placeholder="update shop ..." />
-            <marker date="1461846167720" expanded="true" signature="1825:1908" placeholder="update shop ..." />
-            <marker date="1461846167720" expanded="true" signature="1825:1923" placeholder="update shop ..." />
-            <marker date="1461846167720" expanded="true" signature="2258:2343" placeholder="update shop ..." />
-            <marker date="1461846167720" expanded="true" signature="2710:2795" placeholder="select quant..shop..." />
-            <marker date="1461846167720" expanded="true" signature="3260:3373" placeholder="update shop ..." />
-            <marker date="1461846167720" expanded="true" signature="4392:4417" placeholder="select * fro..shop..." />
-            <marker date="1461846167720" expanded="true" signature="4392:4435" placeholder="select * fro..shop..." />
-            <marker date="1461846167720" expanded="true" signature="4392:4450" placeholder="select * fro..shop..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/SwingController.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1400,8 +1376,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/SwingController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.358804">
-          <caret line="166" column="51" selection-start-line="166" selection-start-column="51" selection-end-line="166" selection-end-column="51" />
+        <state vertical-scroll-proportion="0.7973422">
+          <caret line="203" column="33" selection-start-line="203" selection-start-column="33" selection-end-line="203" selection-end-column="33" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

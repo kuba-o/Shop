@@ -201,6 +201,7 @@ public class SwingController {
 
     public void displaySearchResults(ResultSet rs){
         ArrayList<Record> recordsList = new ArrayList<>();
+        System.out.println("DUPA1");
         try {
             while (rs.next()) {
                 recordsList.add(new Record(rs.getString("title"), rs.getString("artist"), rs.getDouble("price"), rs.getInt("quantity")));
