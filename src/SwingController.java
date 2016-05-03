@@ -1,4 +1,5 @@
 ;import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.xml.transform.Result;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -6,7 +7,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class SwingController {
     public DatabaseController databaseController = new DatabaseController();
@@ -137,7 +141,11 @@ public class SwingController {
                 rs = searchQuery("artist", phraseField.getText());
                 searchFrame.setVisible(false);
                 searchFrame.dispose();
-                displaySearchResults(rs);
+                try {
+                    displaySearchResults(rs);
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
         searchPanel.add(searchByArtist);
@@ -199,15 +207,56 @@ public class SwingController {
 //        searchResultFrame.setVisible(true);
 //    }
 
-    public void displaySearchResults(ResultSet rs){
-        ArrayList<Record> recordsList = new ArrayList<>();
-        System.out.println("DUPA1");
-        try {
-            while (rs.next()) {
-                recordsList.add(new Record(rs.getString("title"), rs.getString("artist"), rs.getDouble("price"), rs.getInt("quantity")));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void displaySearchResults (ResultSet rs) throws SQLException {
+//        Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+//        while (rs.next()) {
+//            Vector<Object> vector = new Vector<Object>();
+//            for (int columnIndex = 1; columnIndex <= 4; columnIndex++) {
+//                vector.add(rs.getObject(columnIndex));
+//            }
+//            data.add(vector);
+//        }
+
+        JTable table = new JTable(buildTableModel(rs));
+        System.out.println("ASD");
+        JFrame searchResultFrame = new JFrame("Search results");
+        searchResultFrame.setSize(800, 500);
+        searchResultFrame.add(table);
+        searchResultFrame.setVisible(true);
+
     }
+    public static DefaultTableModel buildTableModel(ResultSet rs)
+            throws SQLException {
+
+        ResultSetMetaData metaData = rs.getMetaData();
+
+        // names of columns
+        Vector<Object> columnNames = new Vector<Object>();
+
+        int columnCount = metaData.getColumnCount();
+        for (int column = 1; column <= columnCount; column++) {
+            columnNames.add(metaData.getColumnName(column));
+        }
+
+        // data of the table
+        Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+        //        columnNames.add("Artist", "Title", "Price", "Quantity");
+//        columnNames.add("Artist");
+//        columnNames.add("Title");
+//        columnNames.add("Price");
+//        columnNames.add("Quantity");
+//        Vector<Object> header = new Vector<>();
+        data.add(columnNames);
+        while (rs.next()) {
+            Vector<Object> vector = new Vector<Object>();
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                vector.add(rs.getObject(columnIndex));
+            }
+            data.add(vector);
+        }
+
+        return new DefaultTableModel(data, columnNames);
+
+    }
+
 }
