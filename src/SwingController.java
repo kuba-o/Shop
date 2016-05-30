@@ -1,6 +1,5 @@
-;import javax.swing.*;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.xml.transform.Result;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,30 +8,30 @@ import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Vector;
 
 public class SwingController {
     public DatabaseController databaseController = new DatabaseController();
-    private JFrame mainFrame;
-    private JPanel controlPanel;
-    private String[] colnames = {"Artist", "Album", "Price", "Quantity"};
-    public SwingController(){
-        prepareGui();
-    }
+    public JFrame mainFrame = new JFrame();
+    public JPanel controlButtons = new JPanel();
+    public JPanel tablePanel = new JPanel();
+    public JTable mainTable;
+    public int selectedRow;
+    SwingController(){ prepareGui();}
 
     public void prepareGui(){
+        databaseController.createConnection();
+        controlButtons.setMaximumSize(new Dimension(800, controlButtons.getHeight()));
         mainFrame = new JFrame("Title");
         mainFrame.setSize(1200, 800);
-        mainFrame.setLayout(new GridLayout(3, 1));
+        BoxLayout boxLayout = new BoxLayout(mainFrame.getContentPane(), BoxLayout.Y_AXIS); // top to bottom
+        mainFrame.setLayout(boxLayout);
+
         mainFrame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
                 System.exit(0);
             }
         });
-
-        controlPanel = new JPanel();
-        controlPanel.setLayout(new FlowLayout());
 
         JButton addNewAlbum= new JButton("Add");
         addNewAlbum.addActionListener(new ActionListener() {
@@ -40,7 +39,6 @@ public class SwingController {
                 fillNewAlbums();
             }
         });
-        controlPanel.add(addNewAlbum);
 
         JButton searchRecords = new JButton("Search");
         searchRecords.addActionListener(new ActionListener() {
@@ -49,17 +47,75 @@ public class SwingController {
                 openSearchMenu();
             }
         });
-        controlPanel.add(searchRecords);
 
-        mainFrame.add(controlPanel);
+        JButton editRecords = new JButton("Edit");
+        editRecords.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openEditMenu();
+            }
+        });
 
+        JButton deleteRecords= new JButton("Delete");
+        deleteRecords.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = mainTable.getSelectedRow();
+                String artist = mainTable.getModel().getValueAt(selectedRow, 1).toString();
+                String title = mainTable.getModel().getValueAt(selectedRow, 0).toString();
+                databaseController.removeRow(title, artist);
+                displayMainTable(tablePanel);
+            }
+        });
+
+        JButton singleRecordAdd = new JButton("+");
+        singleRecordAdd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = mainTable.getSelectedRow();
+                String artist = mainTable.getModel().getValueAt(selectedRow, 1).toString();
+                String title = mainTable.getModel().getValueAt(selectedRow, 0).toString();
+                databaseController.updateQuantity(title, artist, 1);
+                displayMainTable(tablePanel);
+                mainTable.addRowSelectionInterval(selectedRow, selectedRow);
+            }
+        });
+
+        JButton singleRecordRemove = new JButton("-");
+        singleRecordRemove.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = mainTable.getSelectedRow();
+                String artist = mainTable.getModel().getValueAt(selectedRow, 1).toString();
+                String title = mainTable.getModel().getValueAt(selectedRow, 0).toString();
+                databaseController.updateQuantity(title, artist, -1);
+//                System.out.println(mainTable.getRowCount());
+                System.out.println(selectedRow);
+                if (databaseController.getQuantity(title, artist)<1){
+                    selectedRow = 0;
+                    databaseController.removeRow(title, artist);
+                }
+                displayMainTable(tablePanel);
+                mainTable.addRowSelectionInterval(selectedRow, selectedRow);
+            }
+        });
+
+        JButton searchRecords2 = new JButton("Search");
+        controlButtons.add(addNewAlbum);
+        controlButtons.add(searchRecords);
+        controlButtons.add(editRecords);
+        controlButtons.add(deleteRecords);
+        controlButtons.add(singleRecordAdd);
+        controlButtons.add(singleRecordRemove);
+        controlButtons.setSize(30, 800);
+        mainFrame.add(controlButtons);
         mainFrame.setVisible(true);
-        mainFrame.setLayout(new GridLayout(3, 1));
+        displayMainTable(tablePanel);
     }
 
     public void fillNewAlbums(){
-        mainFrame = new JFrame("Title");
-        mainFrame.setSize(400, 400);
+        JFrame newAlbumsFrame = new JFrame("Title");
+        newAlbumsFrame.setSize(400, 400);
         SpringLayout layout = new SpringLayout();
 
         JPanel panel = new JPanel();
@@ -108,21 +164,59 @@ public class SwingController {
                 } else {
                     databaseController.addAlbum(titleField.getText(), artistField.getText(),
                             Integer.parseInt(quantityField.getText()), Double.parseDouble(priceField.getText()));
+                    displayMainTable(tablePanel);
                 }
-                mainFrame.setVisible(false);
-                mainFrame.dispose();
+                newAlbumsFrame.setVisible(false);
+                newAlbumsFrame.dispose();
             }
         });
 
         panel.add(addButton);
         layout.putConstraint(SpringLayout.WEST, addButton, 200, SpringLayout.WEST, panel);
         layout.putConstraint(SpringLayout.NORTH, addButton, 300, SpringLayout.NORTH, panel);
-        mainFrame.add(panel);
-        mainFrame.setVisible(true);
+        newAlbumsFrame.add(panel);
+        newAlbumsFrame.setVisible(true);
+    }
+
+    public void displayMainTable(JPanel tablePanel){
+        try {
+            tablePanel.removeAll();
+            mainTable = new JTable(buildTableModel(databaseController.searchEverything()));
+            mainTable.setDefaultEditor(Object.class, null);
+            tablePanel.repaint();
+            tablePanel.add(mainTable);
+            tablePanel.setVisible(true);
+            mainFrame.add(tablePanel);
+            mainFrame.setVisible(true);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static DefaultTableModel buildTableModel(ResultSet rs) throws SQLException {
+        ResultSetMetaData metaData = rs.getMetaData();
+
+        // names of columns
+        Vector<Object> columnNames = new Vector<Object>();
+        int columnCount = metaData.getColumnCount();
+        for (int column = 1; column <= columnCount; column++) {
+            columnNames.add(metaData.getColumnName(column));
+        }
+
+        // data of the table
+        Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+        data.add(columnNames);
+        while (rs.next()) {
+            Vector<Object> vector = new Vector<Object>();
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                vector.add(rs.getObject(columnIndex));
+            }
+            data.add(vector);
+        }
+        return new DefaultTableModel(data, columnNames);
     }
 
     public void openSearchMenu(){
-        ResultSet resSet = null;
         JFrame searchFrame = new JFrame("Search");
         searchFrame.setSize(200, 200);
         JPanel searchPanel = new JPanel();
@@ -148,14 +242,21 @@ public class SwingController {
                 }
             }
         });
-        searchPanel.add(searchByArtist);
 
+        searchPanel.add(searchByArtist);
         JButton searchByTitle = new JButton("Title");
         searchByTitle.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                ResultSet rs = null;
+                rs = searchQuery("title", phraseField.getText());
                 searchFrame.setVisible(false);
                 searchFrame.dispose();
+                try {
+                    displaySearchResults(rs);
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
         searchPanel.add(searchByTitle);
@@ -172,91 +273,92 @@ public class SwingController {
         return null;
     }
 
-//    public void displaySearchResults(ResultSet rs){
-//        JFrame searchResultFrame = new JFrame("Search results");
-//        searchResultFrame.setSize(800, 500);
-//        JPanel resultPanel = new JPanel(new GridLayout(0,4));
-//        TextArea textArea = new TextArea();
-//        TextArea textArea2 = new TextArea();
-//
-//        JScrollPane resultArea = new JScrollPane(resultPanel);
-//        try {
-//            while (rs.next()){
-////                ####
-//                FlowLayout fl = new FlowLayout();
-//
-//                String album = rs.getString("title");
-//                String artist= rs.getString("artist");
-//                int quantity = rs.getInt("quantity");
-//                double price = rs.getDouble("price");
-//                textArea.append(album);
-//                textArea.append("\n");
-//                textArea.append(artist);
-//                textArea.append("\n");
-//                textArea2.append(Integer.toString(quantity));
-//                textArea2.append("\n");
-//                textArea2.append(Double.toString(price));
-//                textArea2.append("\n");
-//                resultPanel.add(textArea);
-//                resultPanel.add(textArea2);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        searchResultFrame.add(resultPanel);
-//        searchResultFrame.setVisible(true);
-//    }
-
     public void displaySearchResults (ResultSet rs) throws SQLException {
-//        Vector<Vector<Object>> data = new Vector<Vector<Object>>();
-//        while (rs.next()) {
-//            Vector<Object> vector = new Vector<Object>();
-//            for (int columnIndex = 1; columnIndex <= 4; columnIndex++) {
-//                vector.add(rs.getObject(columnIndex));
-//            }
-//            data.add(vector);
-//        }
-
         JTable table = new JTable(buildTableModel(rs));
-        System.out.println("ASD");
         JFrame searchResultFrame = new JFrame("Search results");
         searchResultFrame.setSize(800, 500);
         searchResultFrame.add(table);
         searchResultFrame.setVisible(true);
 
     }
-    public static DefaultTableModel buildTableModel(ResultSet rs)
-            throws SQLException {
 
-        ResultSetMetaData metaData = rs.getMetaData();
+    public void openEditMenu(){
+        JFrame editFrame = new JFrame("Title");
+        editFrame.setSize(400, 400);
+        SpringLayout layout = new SpringLayout();
 
-        // names of columns
-        Vector<Object> columnNames = new Vector<Object>();
+        int selectedRow = mainTable.getSelectedRow();
+        String old_title = mainTable.getModel().getValueAt(selectedRow, 0).toString();
+        String old_artist = mainTable.getModel().getValueAt(selectedRow, 1).toString();
 
-        int columnCount = metaData.getColumnCount();
-        for (int column = 1; column <= columnCount; column++) {
-            columnNames.add(metaData.getColumnName(column));
-        }
+        JPanel panel = new JPanel();
+        panel.setLayout(layout);
 
-        // data of the table
-        Vector<Vector<Object>> data = new Vector<Vector<Object>>();
-        //        columnNames.add("Artist", "Title", "Price", "Quantity");
-//        columnNames.add("Artist");
-//        columnNames.add("Title");
-//        columnNames.add("Price");
-//        columnNames.add("Quantity");
-//        Vector<Object> header = new Vector<>();
-        data.add(columnNames);
-        while (rs.next()) {
-            Vector<Object> vector = new Vector<Object>();
-            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                vector.add(rs.getObject(columnIndex));
+        JLabel titleLabel = new JLabel("Enter Title: ");
+        JTextField titleField = new JTextField("", 15);
+        titleField.setText(mainTable.getModel().getValueAt(selectedRow, 0).toString());
+        JLabel artistLabel = new JLabel("Enter Artist: ");
+        JTextField artistField= new JTextField("", 15);
+        artistField.setText(mainTable.getModel().getValueAt(selectedRow, 1).toString());
+        JLabel quantityLabel = new JLabel("Enter quantity: ");
+        JTextField quantityField= new JTextField("", 15);
+        quantityField.setText(mainTable.getModel().getValueAt(selectedRow, 2).toString());
+        JLabel priceLabel= new JLabel("Enter price: ");
+        JTextField priceField= new JTextField("", 15);
+        priceField.setText(mainTable.getModel().getValueAt(selectedRow, 3).toString());
+
+        panel.add(titleLabel);
+        panel.add(titleField);
+        panel.add(artistLabel);
+        panel.add(artistField);
+        panel.add(quantityLabel);
+        panel.add(quantityField);
+        panel.add(priceLabel);
+        panel.add(priceField);
+
+        layout.putConstraint(SpringLayout.NORTH, titleLabel, 5, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.WEST, titleLabel, 5, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.WEST, titleField, 5, SpringLayout.EAST, titleLabel);
+        layout.putConstraint(SpringLayout.NORTH, titleField, 5, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, artistLabel, 15, SpringLayout.SOUTH, titleLabel);
+        layout.putConstraint(SpringLayout.WEST, artistLabel,5, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.WEST, artistField, 5, SpringLayout.EAST, artistLabel);
+        layout.putConstraint(SpringLayout.NORTH, artistField, 10, SpringLayout.SOUTH, titleField);
+        layout.putConstraint(SpringLayout.WEST, quantityLabel, 5, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.NORTH, quantityLabel, 10, SpringLayout.SOUTH, artistLabel);
+        layout.putConstraint(SpringLayout.WEST, quantityField, 5, SpringLayout.EAST, quantityLabel);
+        layout.putConstraint(SpringLayout.NORTH, quantityField, 10, SpringLayout.SOUTH, artistField);
+        layout.putConstraint(SpringLayout.WEST, priceLabel, 5, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.NORTH, priceLabel, 10, SpringLayout.SOUTH, quantityLabel);
+        layout.putConstraint(SpringLayout.WEST, priceField, 5, SpringLayout.EAST, priceLabel);
+        layout.putConstraint(SpringLayout.NORTH, priceField, 10, SpringLayout.SOUTH, quantityField);
+
+        JButton saveButton= new JButton("Save changes");
+        saveButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                databaseController.editRow(old_title, old_artist, artistField.getText(), titleField.getText(),
+                        Integer.parseInt(quantityField.getText()), Double.parseDouble(priceField.getText()));
+                editFrame.setVisible(false);
+                editFrame.dispose();
+                displayMainTable(tablePanel);
             }
-            data.add(vector);
-        }
+        });
 
-        return new DefaultTableModel(data, columnNames);
+        JButton cancelButton= new JButton("Cancel");
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                editFrame.setVisible(false);
+                editFrame.dispose();
+            }
+        });
 
+        panel.add(saveButton);
+        panel.add(cancelButton);
+        layout.putConstraint(SpringLayout.WEST, saveButton, 150, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.NORTH, saveButton, 300, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.WEST, cancelButton, 300, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.NORTH, cancelButton, 300, SpringLayout.NORTH, panel);
+        editFrame.add(panel);
+        editFrame.setVisible(true);
     }
-
 }
